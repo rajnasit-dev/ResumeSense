@@ -7,22 +7,30 @@ const mongoose = require("mongoose")
 
 let isConnected = false;
 
-async function connectToMongoDB(){
+async function connectToMongoDB() {
+    // If already connected and socket is active, don't reconnect
+    if (isConnected && mongoose.connection.readyState === 1) {
+        return;
+    }
+
     try {
         await mongoose.connect(process.env.MONGO_URI);
         isConnected = true;
         console.log("Connected to MongoDB");
     } catch (error) {
-        console.log("Error connecting to MongoDB: ",error);
+        console.error("Error connecting to MongoDB: ", error);
+        throw error; // Re-throw so the middleware can handle the failure
     }
 }
 
 app.use(async (req, res, next) => {
-    if(!isConnected){
+    try {
         await connectToMongoDB();
+        next();
+    } catch (error) {
+        res.status(500).json({ error: "Database connection failed" });
     }
-    next();
-})
+});
 
 module.exports = app
 // app.listen(3000, () => {
