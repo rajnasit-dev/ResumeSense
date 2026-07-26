@@ -3,7 +3,7 @@ const app = require("./src/app");
 const connectToDB = require("./src/config/database");
 const mongoose = require("mongoose")
 
-connectToDB();
+// connectToDB();
 
 let isConnected = false;
 
