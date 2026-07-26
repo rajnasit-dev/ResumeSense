@@ -1,4 +1,5 @@
-const { PDFParse } = require("pdf-parse")
+// const { PDFParse } = require("pdf-parse")
+const pdfParse = require("pdf-parse/lib/pdf-parse.js")
 const { generateInterviewReport, generateResumePdf } = require("../services/ai.service")
 const interviewReportModel = require("../models/interviewReport.model")
 
@@ -52,13 +53,18 @@ async function generateInterViewReportController(req, res) {
             })
         }
 
-        const resumeParser = new PDFParse({ data: req.file.buffer })
-        const resumeContent = await resumeParser.getText()
-        await resumeParser.destroy()
+        // const resumeParser = new PDFParse({ data: req.file.buffer })
+        // const resumeParser = await pdfParse(req.file.buffer)
+        // const resumeContent = await resumeParser.getText()
+        // await resumeParser.destroy()
+        const resumeData = await pdfParse(req.file.buffer)
+        const resumeText = resumeData.text
+        
         const { selfDescription, jobDescription } = req.body
 
         const interViewReportByAi = await generateInterviewReport({
-            resume: resumeContent.text,
+            // resume: resumeContent.text,
+            resume: resumeText,
             selfDescription,
             jobDescription
         })
@@ -67,7 +73,8 @@ async function generateInterViewReportController(req, res) {
 
         const interviewReport = await interviewReportModel.create({
             user: req.user.id,
-            resume: resumeContent.text,
+            // resume: resumeContent.text,
+            resume: resumeText,
             selfDescription,
             jobDescription,
             ...interViewReportByAi,
