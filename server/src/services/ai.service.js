@@ -445,12 +445,14 @@ async function generateInterviewReport({ resume, selfDescription, jobDescription
 
 async function generatePdfFromHtml(htmlContent) {
     // const browser = await puppeteer.launch()
+    const { default: puppeteer } = await import("puppeteer-core");
     const browser = await puppeteer.launch({
-  args: chromium.args,
-  executablePath: await chromium.executablePath(),
-  headless: chromium.headless,
-  defaultViewport: chromium.defaultViewport,
-});
+        args: chromium.args,
+        executablePath: await chromium.executablePath(),
+        headless: true,
+//   headless: chromium.headless,
+//   defaultViewport: chromium.defaultViewport,
+    });
     const page = await browser.newPage();
     await page.setContent(htmlContent, { waitUntil: "networkidle0" })
 
