@@ -19,7 +19,7 @@ async function connectToMongoDB(){
 
 app.use(async (req, res, next) => {
     if(!isConnected){
-        connectToMongoDB();
+        await connectToMongoDB();
     }
     next();
 })
